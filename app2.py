@@ -113,7 +113,8 @@ def generate_palm2_response(prompt_input):
     # return response.json()["choices"][0]["text"].strip()
 
 # User-provided prompt
-if prompt := st.chat_input(disabled=not palm2_api_key):
+
+if prompt := st.chat_input( palm2_api_key):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
