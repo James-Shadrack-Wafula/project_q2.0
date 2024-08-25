@@ -1,3 +1,149 @@
+# import streamlit as st
+# from streamlit_extras.add_vertical_space import add_vertical_space
+# import sqlite3
+# from hashlib import sha256
+# import os
+
+# import google.generativeai as palm
+# palm.configure(api_key="AIzaSyBHINqTvLyNBmt3VCSBHYaqxsxfBjBlHDk")
+
+# # Initialize the SQLite database
+# conn = sqlite3.connect('user_data.db')
+# c = conn.cursor()
+
+# # Create users table
+# c.execute('''
+#     CREATE TABLE IF NOT EXISTS users (
+#         username TEXT PRIMARY KEY,
+#         password TEXT
+#     )
+# ''')
+
+# # Create queries table
+# c.execute('''
+#     CREATE TABLE IF NOT EXISTS queries (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         username TEXT,
+#         query TEXT,
+#         response TEXT,
+#         FOREIGN KEY (username) REFERENCES users (username)
+#     )
+# ''')
+
+# conn.commit()
+
+# def hash_password(password):
+#     return sha256(password.encode()).hexdigest()
+
+# # Palm2 API key
+# palm2_api_key = os.getenv('PALM2_API_KEY', '')
+
+# def palm_(prompt):
+#     model_id = "models/text-bison-001"
+#     try:
+#         completion = palm.generate_text(
+#             model=model_id,
+#             prompt=prompt,
+#             temperature=0.99,
+#             max_output_tokens=800,
+#         )
+#         return completion.result
+#     except Exception as e:
+#         return f"An error occurred: {str(e)}"
+
+# # Authentication function
+# def login(username, password):
+#     c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, hash_password(password)))
+#     return c.fetchone()
+
+# def register(username, password):
+#     try:
+#         c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hash_password(password)))
+#         conn.commit()
+#         return True
+#     except sqlite3.IntegrityError:
+#         return False
+
+# def save_query(username, query, response):
+#     c.execute("INSERT INTO queries (username, query, response) VALUES (?, ?, ?)", (username, query, response))
+#     conn.commit()
+
+# # App title and sidebar
+# st.set_page_config(page_title="Q 2.0", page_icon="🤖")
+
+# with st.sidebar:
+#     st.title("Jimmy's AI Assistant\n🤖💬 Q 2.0")
+#     st.markdown("""
+#     ## About
+#     Hello meet Q, my AI Powered Personal Assistant. \n 
+#     Have a question? Ask Q. \n
+#     Contact me on:
+#     - [WhatsApp](https://wa.me/254746727592/)
+#     - [email](mailto:jamesshadrack23@gmail.com)
+#     - [GitHub](https://github.com/James-Shadrack-Wafula/)
+#     """)
+#     st.write("Developed by [Jimmy](http://james-shadrack-wafula.rf.gd/)")
+
+# # Login/Register
+# if "logged_in" not in st.session_state:
+#     st.session_state.logged_in = False
+
+# if not st.session_state.logged_in:
+#     st.header("Login")
+#     username = st.text_input("Username")
+#     password = st.text_input("Password", type="password")
+#     if st.button("Login"):
+#         user = login(username, password)
+#         if user:
+#             st.session_state.logged_in = True
+#             st.session_state.username = username
+#             st.success("Logged in successfully!")
+#         else:
+#             st.error("Invalid username or password")
+#     if st.button("Register"):
+#         if register(username, password):
+#             st.success("Registered successfully! Please log in.")
+#         else:
+#             st.error("Username already exists.")
+# else:
+#     st.header(f"Welcome, {st.session_state.username}")
+
+#     # Store generated responses
+#     if "messages" not in st.session_state:
+#         st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+
+#     # Display or clear chat messages
+#     for message in st.session_state.messages:
+#         with st.chat_message(message["role"]):
+#             st.write(message["content"])
+
+#     def clear_chat_history():
+#         st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+#     st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
+
+#     # Function for generating Palm2 response
+#     def generate_palm2_response(prompt_input):
+#         response = palm_(prompt_input)
+#         save_query(st.session_state.username, prompt_input, response)
+#         return response
+
+#     # User-provided prompt
+#     if prompt := st.chat_input():
+#         st.session_state.messages.append({"role": "user", "content": prompt})
+#         with st.chat_message("user"):
+#             st.write(prompt)
+
+#     # Generate a new response if the last message is not from the assistant
+#     if st.session_state.messages[-1]["role"] != "assistant":
+#         with st.chat_message("assistant"):
+#             with st.spinner("Thinking..."):
+#                 response = generate_palm2_response(prompt)
+#                 st.write(response)
+#         message = {"role": "assistant", "content": response}
+#         st.session_state.messages.append(message)
+
+
+## Version 2.0
 import streamlit as st
 from streamlit_extras.add_vertical_space import add_vertical_space
 import replicate
